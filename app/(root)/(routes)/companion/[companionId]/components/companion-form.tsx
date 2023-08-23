@@ -21,9 +21,12 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/components/ui/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Category, Companion } from '@prisma/client';
+import axios from 'axios';
 import { Wand2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -62,6 +65,9 @@ const formSchema = z.object({
 });
 
 const CompanionForm = ({ initialData, categories }: CompanionFormProps) => {
+  const router = useRouter();
+  const { toast } = useToast();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: initialData || {
@@ -77,7 +83,27 @@ const CompanionForm = ({ initialData, categories }: CompanionFormProps) => {
   const isLoading = form.formState.isSubmitting;
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+    try {
+      if (initialData) {
+        // Update Companion
+        await axios.patch(`/api/companion/${initialData.id}`, values);
+      } else {
+        // Create companion functionality
+        await axios.post('/api/companion', values);
+      }
+
+      toast({
+        description: 'Success',
+      });
+
+      router.refresh();
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Uh oh! Something went wrong.',
+        description: 'There was a problem with your request.',
+      });
+    }
   };
 
   return (
