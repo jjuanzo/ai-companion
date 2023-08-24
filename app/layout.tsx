@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 
+import { ProModal } from '@/components/pro-modal';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/toaster';
 
@@ -24,6 +25,7 @@ export default function RootLayout({
       <html lang="en" suppressHydrationWarning>
         <body className={cn('bg-secondary', inter.className)}>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <ProModal />
             {children}
             <Toaster />
           </ThemeProvider>
